@@ -3,6 +3,7 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +13,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Category {
+public class Category extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "category_id")

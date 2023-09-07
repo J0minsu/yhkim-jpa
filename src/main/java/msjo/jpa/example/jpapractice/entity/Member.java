@@ -3,6 +3,8 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
+import org.aspectj.lang.annotation.Before;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -13,7 +15,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class Member {
+public class Member extends BaseEntity {
 
     @Id
     @GeneratedValue
@@ -30,4 +32,5 @@ public class Member {
 
     @OneToMany(mappedBy = "member")
     private List<Order> orders = new ArrayList<>();
+
 }

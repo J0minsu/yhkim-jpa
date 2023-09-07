@@ -2,13 +2,14 @@ package msjo.jpa.example.jpapractice.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.*;
 
 @Entity
 @Getter
 @Setter
-public class OrderItem {
+public class OrderItem extends BaseEntity {
 
     @Id
     @GeneratedValue

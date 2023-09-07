@@ -3,6 +3,7 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import msjo.jpa.example.jpapractice.constants.OrderStatus;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,7 +14,7 @@ import java.util.List;
 @Getter
 @Setter
 @Table(name = "ORDERS")
-public class Order {
+public class Order extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "order_id")

@@ -2,6 +2,7 @@ package msjo.jpa.example.jpapractice.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +12,7 @@ import javax.persistence.Id;
 @Entity
 @Getter
 @Setter
-public class Item {
+public class Item extends BaseEntity {
 
     @Id
     @GeneratedValue

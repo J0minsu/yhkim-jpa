@@ -7,12 +7,9 @@ import msjo.jpa.example.jpapractice.strategy.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
-import javax.persistence.PersistenceContext;
 
 @Service
 @Slf4j
@@ -20,6 +17,16 @@ public class PracticeService {
 
     @Autowired
     private EntityManager em;
+
+    @Transactional(isolation = Isolation.DEFAULT)
+    public void updateTest() {
+
+        Member member = em.find(Member.class, 1L);
+        System.out.println("member = " + member);
+        member.setCity("달나라");
+
+
+    }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public void persistTest() {
@@ -33,18 +40,21 @@ public class PracticeService {
             member1.setStreet("남문로");
             member1.setZipcode("21117");
             member1.setCity("성남시 중원구 태평3동");
+            member1.setCreateBy("msjo");
 
             Member member2 = new Member();
             member2.setName("홍은영");
             member2.setStreet("영통롱");
             member2.setZipcode("21111");
             member2.setCity("경기도 수원시 영통구");
+            member2.setCreateBy("eyhong");
 
             Member member3 = new Member();
             member3.setName("이지석");
             member3.setStreet("영남로");
             member3.setZipcode("11115");
             member3.setCity("인천시 계양구 동양동");
+            member3.setCreateBy("jslee");
 
             System.out.println("member1 = " + member1);
             System.out.println("member2 = " + member2);

@@ -3,6 +3,7 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.*;
 
@@ -10,7 +11,7 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class CategoryItem {
+public class CategoryItem extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "category_id")
