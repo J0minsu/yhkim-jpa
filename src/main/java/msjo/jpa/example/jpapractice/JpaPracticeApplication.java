@@ -20,9 +20,11 @@ public class JpaPracticeApplication {
     @PostConstruct
     void post() {
 
-        practiceService.persistTest();
+//        practiceService.persistTest();
 //        practiceService.inheritTest();
-        practiceService.updateTest();
+//        practiceService.updateTest();
+//        practiceService.proxyTest();
+        practiceService.cascadeTest();
     }
 
 }

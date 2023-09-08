@@ -2,7 +2,10 @@ package msjo.jpa.example.jpapractice.service;
 
 
 import lombok.extern.slf4j.Slf4j;
+import msjo.jpa.example.jpapractice.cascade.Child;
+import msjo.jpa.example.jpapractice.cascade.Parent;
 import msjo.jpa.example.jpapractice.entity.Member;
+import msjo.jpa.example.jpapractice.entity.Order;
 import msjo.jpa.example.jpapractice.strategy.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,6 +13,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,6 +29,52 @@ public class PracticeService {
         System.out.println("member = " + member);
         member.setCity("달나라");
 
+
+    }
+
+    @Transactional
+    public void cascadeTest() {
+
+        Parent parent = new Parent();
+
+        Child childA = new Child();
+        Child childB = new Child();
+
+        parent.addChild(childA);
+        parent.addChild(childB);
+
+        em.persist(parent);
+    }
+
+    @Transactional
+    public void proxyTest() {
+
+        Member member = new Member();
+        member.setName("손풍기");
+
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+//        Member fineMember = em.find(Member.class, 1L);
+        Member fineMember = em.getReference(Member.class, 1L);
+        System.out.println("fineMember.getId() = " + fineMember.getId());
+        printMember(fineMember);
+        printMemberAndOrders(fineMember);
+    }
+
+    private void printMember(Member member) {
+        String username = member.getName();
+        System.out.println("username = " + username);
+    }
+
+    private void printMemberAndOrders(Member member) {
+        String username = member.getName();
+        System.out.println("username = " + username);
+
+        List<Order> orders = member.getOrders();
+        System.out.println("orders = " + orders);
 
     }
 
