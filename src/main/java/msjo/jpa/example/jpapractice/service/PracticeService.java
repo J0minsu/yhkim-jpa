@@ -56,6 +56,7 @@ public class PracticeService {
         List<Member> members = em.createQuery(cq).getResultList();
 
         System.out.println("members = " + members);
+        
 
     }
 
