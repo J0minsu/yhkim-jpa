@@ -18,9 +18,9 @@ public class Delivery extends BaseEntity {
     @Column(name = "delivery_id")
     private Long id;
 
-    private String city;
-    private String street;
-    private String zipcode;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private AddressEntity address;
+
     @Enumerated(EnumType.STRING)
     private DeliveryStatus status;
 

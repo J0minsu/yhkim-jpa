@@ -24,7 +24,12 @@ public class JpaPracticeApplication {
 //        practiceService.inheritTest();
 //        practiceService.updateTest();
 //        practiceService.proxyTest();
-        practiceService.cascadeTest();
+//        practiceService.cascadeTest();
+//        practiceService.embedTest();
+//        practiceService.valueTypeTest();
+//        practiceService.jpqlTest();
+//        practiceService.criteriaTest();
+        practiceService.queryDSLTest();
     }
 
 }

@@ -2,6 +2,7 @@ package msjo.jpa.example.jpapractice.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 
 import javax.persistence.*;

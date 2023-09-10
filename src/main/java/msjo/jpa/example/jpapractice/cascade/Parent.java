@@ -30,6 +30,11 @@ public class Parent {
     private Long id;
     private String name;
 
+    /**
+     * Child 의 관리포인트가 Parent 일 때만 cascade 설정에 유리
+     * 등록의 Life Cycle 이 거의 동일할 때
+     * 단독 소유자일 때
+     */
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "parent", cascade = CascadeType.ALL)
     private List<Child> childList = new ArrayList<>();
 

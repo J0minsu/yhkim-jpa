@@ -15,7 +15,7 @@ class PracticeServiceTest {
 //    @Test
     void main() {
 
-        practiceService.main();
+//        practiceService.main();
 
     }
 }

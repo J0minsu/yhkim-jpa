@@ -3,18 +3,19 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import msjo.jpa.example.jpapractice.entity.embed.Address;
+import msjo.jpa.example.jpapractice.entity.embed.Period;
 import msjo.jpa.example.jpapractice.strategy.BaseEntity;
 import org.aspectj.lang.annotation.Before;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"addressHistory", "orders"})
 public class Member extends BaseEntity {
 
     @Id
@@ -24,11 +25,35 @@ public class Member extends BaseEntity {
 
     private String name;
 
-    private String city;
+    @Embedded
+    private Period period;
 
-    private String street;
+    @Embedded
+    private Address homeAddress;
 
-    private String zipcode;
+    @Embedded
+    @AttributeOverrides({
+            @AttributeOverride(name = "city", column = @Column(name = "office_city")),
+            @AttributeOverride(name = "street", column = @Column(name = "office_street")),
+            @AttributeOverride(name = "zipcode", column = @Column(name = "office_zipcode"))
+    })
+    private Address officeAddress;
+
+
+    @ElementCollection
+    @CollectionTable(name = "favorites",
+                     joinColumns = @JoinColumn(name = "member_id"))
+    @Column(name = "food_name")
+    private Set<String> favorites = new HashSet<>();
+
+    /*@ElementCollection
+    @CollectionTable(name = "address",
+                     joinColumns = @JoinColumn(name = "member_id"))
+    private List<Address> addressHistory = new ArrayList<>();*/
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "member_id")
+    private List<AddressEntity> addressHistory = new ArrayList<>();
 
     @OneToMany(mappedBy = "member", fetch = FetchType.LAZY)
     private List<Order> orders = new ArrayList<>();
