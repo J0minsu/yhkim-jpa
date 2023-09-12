@@ -119,7 +119,8 @@ public class PracticeService {
         memberA.getAddressHistory().add(addressB);
         memberA.getAddressHistory().add(addressC);
 
-
+        log.info("addressC :: {}", addressC);
+        
         Book book = new Book();
         book.setName("토끼와 선녀");
         book.setPrice(17000);
