@@ -5,13 +5,12 @@ import lombok.extern.slf4j.Slf4j;
 import msjo.jpa.example.jpapractice.cascade.Child;
 import msjo.jpa.example.jpapractice.cascade.Parent;
 import msjo.jpa.example.jpapractice.constants.DeliveryStatus;
+import msjo.jpa.example.jpapractice.constants.MemberType;
 import msjo.jpa.example.jpapractice.constants.OrderStatus;
-import msjo.jpa.example.jpapractice.entity.AddressEntity;
-import msjo.jpa.example.jpapractice.entity.Delivery;
-import msjo.jpa.example.jpapractice.entity.Member;
-import msjo.jpa.example.jpapractice.entity.Order;
+import msjo.jpa.example.jpapractice.entity.*;
 import msjo.jpa.example.jpapractice.entity.embed.Address;
 import msjo.jpa.example.jpapractice.entity.embed.Period;
+import msjo.jpa.example.jpapractice.strategy.Book;
 import msjo.jpa.example.jpapractice.strategy.Movie;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +22,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -39,7 +39,144 @@ public class PracticeService {
         System.out.println("member = " + member);
         /*member.setCity("달나라");*/
 
+    }
 
+    @Transactional
+    public void fetchTest() {
+
+        Team teamA = new Team("TeamA");
+        Team teamB = new Team("TeamB");
+        em.persist(teamA);
+        em.persist(teamB);
+
+        Member memberA = new Member();
+        memberA.setName("수원");
+        memberA.setType(MemberType.ADMIN);
+        memberA.setAge(18);
+        memberA.setTeam(teamA);
+        em.persist(memberA);
+
+        Member memberB = new Member();
+        memberB.setType(MemberType.USER);
+        memberB.setTeam(teamB);
+        em.persist(memberB);
+
+        Member memberC = new Member();
+        memberC.setType(MemberType.USER);
+        memberC.setTeam(teamB);
+        em.persist(memberC);
+
+        AddressEntity addressA = new AddressEntity("인천", "아나지로", "21116");
+        AddressEntity addressB = new AddressEntity("성남", "남문로", "31167");
+        AddressEntity addressC = new AddressEntity("수원", "영통로", "67623");
+
+        memberA.getAddressHistory().add(addressA);
+        memberA.getAddressHistory().add(addressB);
+        memberA.getAddressHistory().add(addressC);
+
+        em.flush();
+        em.clear();
+
+        String query = "";
+        /**
+         * N + 1
+         */
+        //query = "SELECT m FROM Member m";
+
+        /**
+         * fetch
+         */
+        //query = "SELECT m FROM Member m JOIN FETCH m.team";
+
+        /**
+         * collection fetch ( need 'DISTINCT' )
+         */
+        query = "SELECT DISTINCT t FROM Team t JOIN FETCH t.members";
+
+        List<Team> resultList = em.createQuery(query, Team.class).getResultList();
+
+        for (Team team : resultList) {
+            System.out.println("team = " + team.getName() + " :: {" + team.getMembers().size());
+        }
+    }
+
+    @Transactional
+    public void expressionTest() {
+
+        Member memberA = new Member();
+        memberA.setName("수원");
+        memberA.setType(MemberType.ADMIN);
+        memberA.setAge(18);
+
+        Member memberB = new Member();
+        memberB.setType(MemberType.USER);
+
+        AddressEntity addressA = new AddressEntity("인천", "아나지로", "21116");
+        AddressEntity addressB = new AddressEntity("성남", "남문로", "31167");
+        AddressEntity addressC = new AddressEntity("수원", "영통로", "67623");
+
+        memberA.getAddressHistory().add(addressA);
+        memberA.getAddressHistory().add(addressB);
+        memberA.getAddressHistory().add(addressC);
+
+
+        Book book = new Book();
+        book.setName("토끼와 선녀");
+        book.setPrice(17000);
+        book.setIsbn("RAA-001");
+        book.setAuthor("hyshayishi jo");
+
+        em.persist(memberA);
+        em.persist(memberB);
+        em.persist(book);
+
+        em.flush();
+        em.clear();
+
+        List<String> resultList = new ArrayList<>();
+
+
+        /**
+         * NULLIF
+         */
+        String nullIfQuery = "SELECT NULLIF(m.name, '이름 없는 헤원') FROM Member m";
+                resultList = em.createQuery(nullIfQuery, String.class).getResultList();
+
+        /**
+         * COALESCE
+         */
+        /*String coalesceQuery = "SELECT COALESCE(m.name, '이름 없는 헤원') FROM Member m";
+        resultList = em.createQuery(coalesceQuery, String.class).getResultList();*/
+
+        /**
+         * Case
+         */
+        /*String caseQuery = "SELECT " +
+                "CASE " +
+                "WHEN m.age <= 10 THEN '학생요금' " +
+                "WHEN m.age > 60 THEN '경로요금' " +
+                "ELSE '일반요금' " +
+                "END " +
+                "FROM Member m";
+
+        resultList = em.createQuery(caseQuery, String.class).getResultList();
+        */
+        for (String s : resultList) {
+            System.out.println("s = " + s);
+        }
+
+        /*em.createQuery("SELECT i FROM StrategyItem i WHERE type(i) = Book", StrategyItem.class).getResultList();*/
+
+        /*String query = "SELECT m.name, 'HELLO', TRUE " +
+                         "FROM Member m " +
+                        "WHERE m.type = :userType";
+        List<Object[]> result = em.createQuery(query).setParameter("userType", MemberType.ADMIN).getResultList();
+
+        for (Object[] obs : result) {
+            System.out.println("obs[0] = " + obs[0]);
+            System.out.println("obs[1] = " + obs[1]);
+            System.out.println("obs[2] = " + obs[2]);
+        }*/
     }
 
     @Transactional
@@ -56,15 +193,73 @@ public class PracticeService {
         List<Member> members = em.createQuery(cq).getResultList();
 
         System.out.println("members = " + members);
-        
 
+        List<Member> memberResult = em.createQuery("SELECT m FROM Member m", Member.class)
+                .setFirstResult(0)
+                .setMaxResults(5)
+                .getResultList();
     }
 
     @Transactional
-    public void queryDSLTest() {
+    public void jpqlJoinTest() {
 
+        Member member = new Member();
+        member.setName("수원");
 
+        AddressEntity addressA = new AddressEntity("인천", "아나지로", "21116");
+        AddressEntity addressB = new AddressEntity("성남", "남문로", "31167");
+        AddressEntity addressC = new AddressEntity("수원", "영통로", "67623");
 
+        member.getAddressHistory().add(addressA);
+        member.getAddressHistory().add(addressB);
+        member.getAddressHistory().add(addressC);
+
+        em.persist(member);
+
+        em.flush();
+        em.clear();
+
+        /**
+         * inner join
+         */
+        /*String innerJoinQuery = "SELECT a FROM Member m INNER JOIN m.addressHistory a";
+        List<AddressEntity> innerResultList = em.createQuery(innerJoinQuery, AddressEntity.class).getResultList();*/
+
+        /**
+         * left outer join
+         */
+        /*String outerJoinQuery = "SELECT a FROM Member m LEFT OUTER JOIN m.addressHistory a";
+        List<AddressEntity> outerResultList = em.createQuery(outerJoinQuery, AddressEntity.class).getResultList();*/
+
+        /**
+         * setter join
+         */
+        /*String setterJoinQuery = "SELECT m FROM Member m, AddressEntity a WHERE m.name = a.address.city";
+        List<Member> setterResultList = em.createQuery(setterJoinQuery, Member.class).getResultList();
+
+        for (Member m : setterResultList) {
+            System.out.println("m = " + m);
+        }*/
+
+        /**
+         * left outer join using 'on'
+         */
+        /*String leftOuterJoinQuery = "SELECT m FROM Member m LEFT OUTER JOIN m.addressHistory a ON a.address.street = '영통로'";
+        List<Member> innerResultList = em.createQuery(leftOuterJoinQuery, Member.class).getResultList();
+
+        for (Member m : innerResultList) {
+            System.out.println("m = " + m);
+        }*/
+
+        /**
+         * left outer join using 'on' between non-related tables
+         */
+        String leftQueryJoinUsingOnQuery = "SELECT m FROM Member m LEFT JOIN Item i ON m.name = i.name";
+        List<Member> resultList = em.createQuery(leftQueryJoinUsingOnQuery, Member.class).getResultList();
+
+        for (Member m : resultList) {
+            System.out.println("m = " + m);
+        }
     }
 
     @Transactional

@@ -3,6 +3,7 @@ package msjo.jpa.example.jpapractice.entity;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import msjo.jpa.example.jpapractice.constants.MemberType;
 import msjo.jpa.example.jpapractice.entity.embed.Address;
 import msjo.jpa.example.jpapractice.entity.embed.Period;
 import msjo.jpa.example.jpapractice.strategy.BaseEntity;
@@ -23,7 +24,16 @@ public class Member extends BaseEntity {
     @Column(name = "member_id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
+    private MemberType type;
+
     private String name;
+
+    private int age;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     @Embedded
     private Period period;
@@ -51,7 +61,7 @@ public class Member extends BaseEntity {
                      joinColumns = @JoinColumn(name = "member_id"))
     private List<Address> addressHistory = new ArrayList<>();*/
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private List<AddressEntity> addressHistory = new ArrayList<>();
 

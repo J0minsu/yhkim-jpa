@@ -29,7 +29,10 @@ public class JpaPracticeApplication {
 //        practiceService.valueTypeTest();
 //        practiceService.jpqlTest();
 //        practiceService.criteriaTest();
-        practiceService.queryDSLTest();
+//        practiceService.queryDSLTest();
+//        practiceService.jpqlJoinTest();
+//        practiceService.expressionTest();
+        practiceService.fetchTest();
     }
 
 }
