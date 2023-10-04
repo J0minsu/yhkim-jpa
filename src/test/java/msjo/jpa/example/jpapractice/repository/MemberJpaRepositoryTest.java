@@ -74,4 +74,41 @@ class MemberJpaRepositoryTest {
         long deletedCount = memberJpaRepository.count();
         assertThat(deletedCount).isEqualTo(1);
     }
+
+    @Test
+    public void 기본_페이징_테스트() {
+
+        memberJpaRepository.save(Member.of("Member1", 10, null));
+        memberJpaRepository.save(Member.of("Member2", 10, null));
+        memberJpaRepository.save(Member.of("Member3", 10, null));
+        memberJpaRepository.save(Member.of("Member4", 10, null));
+        memberJpaRepository.save(Member.of("Member5", 10, null));
+        memberJpaRepository.save(Member.of("Member6", 10, null));
+
+        int age = 10;
+        int offset = 2;
+        int limit = 3;
+
+        List<Member> members = memberJpaRepository.findByPage(age, offset, limit);
+        long totalCount = memberJpaRepository.totalCount(age);
+
+        assertThat(members.size()).isEqualTo(limit);
+        assertThat(totalCount).isEqualTo(6);
+    }
+
+    @Test
+    public void 기본_벌크_테스트() {
+
+        memberJpaRepository.save(Member.of("Member1", 10, null));
+        memberJpaRepository.save(Member.of("Member2", 15, null));
+        memberJpaRepository.save(Member.of("Member3", 20, null));
+        memberJpaRepository.save(Member.of("Member4", 25, null));
+        memberJpaRepository.save(Member.of("Member5", 30, null));
+        memberJpaRepository.save(Member.of("Member6", 35, null));
+
+        memberJpaRepository.bulkAgePlus(20);
+
+        memberJpaRepository.findAll().forEach(System.out::println);
+
+    }
 }

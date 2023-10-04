@@ -7,8 +7,11 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.*;
 import org.springframework.test.annotation.Rollback;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 
 import java.util.Arrays;
@@ -35,9 +38,14 @@ class MemberRepositoryTest {
 
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private MemberJpaRepository memberJpaRepository;
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @BeforeEach
     public void 데이터_세팅() {
@@ -56,6 +64,9 @@ class MemberRepositoryTest {
         memberRepository.save(memberB);
         memberRepository.save(memberC);
         memberRepository.save(memberD);
+
+        entityManager.flush();
+        entityManager.clear();
     }
 
     @Test
@@ -136,6 +147,71 @@ class MemberRepositoryTest {
         List<MemberSearchResponse> memberSearchResponses = memberRepository.findMemberWithTeam();
         memberSearchResponses.forEach(System.out::println);
         assertThat(memberSearchResponses.size()).isEqualTo(4);
+
+    }
+
+    @Test
+    public void 기본_페이징_테스트() {
+
+        memberRepository.save(Member.of("Member1", 10, null));
+        memberRepository.save(Member.of("Member2", 10, null));
+        memberRepository.save(Member.of("Member3", 10, null));
+        memberRepository.save(Member.of("Member4", 10, null));
+        memberRepository.save(Member.of("Member5", 10, null));
+        memberRepository.save(Member.of("Member6", 10, null));
+
+        int age = 10;
+        int page = 0;
+        int limit = 3;
+
+        PageRequest pageRequest = PageRequest.of(page, limit, Sort.by(Sort.Direction.DESC, "username"));
+        /*
+        Page<Member> members = memberRepository.findByAge(age, pageRequest);
+        List<Member> memberContents = members.getContent();
+
+        assertThat(memberContents.size()).isEqualTo(3);
+        assertThat(members.getTotalElements()).isEqualTo(6);
+        assertThat(members.getTotalPages()).isEqualTo(2);
+        assertThat(members.getNumber()).isEqualTo(0);
+        assertThat(members.isFirst()).isTrue();
+        assertThat(members.hasNext()).isTrue();
+        */
+
+        Slice<Member> members = memberRepository.findByAge(age, pageRequest);
+        List<Member> memberContents = members.getContent();
+
+        assertThat(memberContents.size()).isEqualTo(3);
+//        assertThat(members.getTotalElements()).isEqualTo(6);
+//        assertThat(members.getTotalPages()).isEqualTo(2);
+        assertThat(members.getNumber()).isEqualTo(0);
+        assertThat(members.isFirst()).isTrue();
+        assertThat(members.hasNext()).isTrue();
+    }
+
+    @Test
+    public void 기본_벌크_테스트() {
+
+        memberRepository.save(Member.of("Member1", 10, null));
+        memberRepository.save(Member.of("Member2", 15, null));
+        memberRepository.save(Member.of("Member3", 20, null));
+        memberRepository.save(Member.of("Member4", 25, null));
+        memberRepository.save(Member.of("Member5", 30, null));
+        memberRepository.save(Member.of("Member6", 35, null));
+
+        int resultCount = memberRepository.bulkAgePlus(20);
+        System.out.println("resultCount = " + resultCount);
+
+        memberRepository.findAll().forEach(System.out::println);
+
+    }
+
+    @Test
+    public void 지연로딩_테스트() {
+
+        List<Member> members = memberRepository.findMemberFetchJoin();
+        members.forEach(member -> {
+            System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
+        });
 
     }
 }

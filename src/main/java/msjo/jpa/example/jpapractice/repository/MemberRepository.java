@@ -2,7 +2,11 @@ package msjo.jpa.example.jpapractice.repository;
 
 import msjo.jpa.example.jpapractice.domain.dto.request.MemberSearchResponse;
 import msjo.jpa.example.jpapractice.domain.entity.Member;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -47,4 +51,27 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     """)
     List<Member> findByNames(@Param("names") List<String> names);
 
+    @Query(value = "select m from Member m",
+             countQuery = "select count(m.username) from Member m")
+    Page<Member> findByAge(int age, Pageable pageable);
+
+
+    @Modifying(clearAutomatically = true)
+    @Query("""
+        UPDATE Member m
+           SET m.age = m.age + 1 
+         WHERE m.age >= :age 
+        """)
+    int bulkAgePlus(@Param("age") int i);
+
+    @Query("""
+        SELECT m
+          FROM Member m LEFT JOIN FETCH m.team
+    """)
+    List<Member> findMemberFetchJoin();
+//    Page<Member> findByAge(int age, Pageable pageable);
+//    Slice<Member> findByAge(int age, Pageable pageable);
+
+
+//    List<Member> findByPage(int age, int offset, int limit);
 }
