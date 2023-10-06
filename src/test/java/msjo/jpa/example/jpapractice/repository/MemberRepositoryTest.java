@@ -208,10 +208,20 @@ class MemberRepositoryTest {
     @Test
     public void 지연로딩_테스트() {
 
-        List<Member> members = memberRepository.findMemberFetchJoin();
+//        List<Member> members = memberRepository.findMemberFetchJoin();
+        List<Member> members = memberRepository.findByUsernameContaining("Member");
         members.forEach(member -> {
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
         });
 
+    }
+
+    @Test
+    public void 쿼리_힌트() {
+        Member member = memberRepository.findById(5L).get();
+
+        member.setUsername("ChangeName");
+
+        entityManager.flush();
     }
 }
