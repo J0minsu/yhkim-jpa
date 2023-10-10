@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * packageName    : msjo.jpa.example.jpapractice.repository
@@ -24,8 +25,9 @@ import java.util.List;
  * -----------------------------------------------------------
  * 2023/09/26        ms.jo       최초 생성
  */
-public interface MemberRepository extends JpaRepository<Member, Long> {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
 
+    Optional<Member> findById(Long id);
     List<Member> findByUsernameAndAgeIsGreaterThan(String name, int age);
 
     List<Member> findTop3ByAgeLessThan(int age);
@@ -86,4 +88,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @EntityGraph(attributePaths = {"team"})
     List<Member> findByUsernameContaining(@Param("username") String username);
+
 }

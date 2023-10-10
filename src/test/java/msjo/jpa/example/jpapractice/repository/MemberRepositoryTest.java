@@ -189,7 +189,7 @@ class MemberRepositoryTest {
     }
 
     @Test
-    public void 기본_벌크_테스트() {
+    public void 기본_벌크_테스트() throws Exception {
 
         memberRepository.save(Member.of("Member1", 10, null));
         memberRepository.save(Member.of("Member2", 15, null));
@@ -223,5 +223,11 @@ class MemberRepositoryTest {
         member.setUsername("ChangeName");
 
         entityManager.flush();
+    }
+
+    @Test
+    public void 커스텀_테스트() {
+        List<Member> members = memberRepository.findMemberCustom();
+        members.forEach(System.out::println);
     }
 }
