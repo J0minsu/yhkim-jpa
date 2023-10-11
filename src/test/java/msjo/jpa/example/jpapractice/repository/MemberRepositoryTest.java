@@ -3,6 +3,7 @@ package msjo.jpa.example.jpapractice.repository;
 import msjo.jpa.example.jpapractice.domain.dto.request.MemberSearchResponse;
 import msjo.jpa.example.jpapractice.domain.entity.Member;
 import msjo.jpa.example.jpapractice.domain.entity.Team;
+import msjo.jpa.example.jpapractice.domain.projections.UsernameOnly;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -210,9 +211,9 @@ class MemberRepositoryTest {
 
 //        List<Member> members = memberRepository.findMemberFetchJoin();
         List<Member> members = memberRepository.findByUsernameContaining("Member");
-        members.forEach(member -> {
+        for (Member member : members) {
             System.out.println("member.getTeam().getName() = " + member.getTeam().getName());
-        });
+        }
 
     }
 
@@ -230,4 +231,31 @@ class MemberRepositoryTest {
         List<Member> members = memberRepository.findMemberCustom();
         members.forEach(System.out::println);
     }
+
+    @Test
+    public void 쿼리_이그젬플() {
+
+        String memberA = "memberA";
+
+        Member member = Member.of(memberA);
+        Team team = Team.of("teamA");
+        member.setTeam(team);
+        ExampleMatcher matcher = ExampleMatcher.matching().withIgnorePaths("age");
+
+        Example<Member> example = Example.of(member, matcher);
+
+        List<Member> members = memberRepository.findAll(example);
+
+        assertThat(members.get(0).getUsername()).isEqualTo(memberA);
+
+    }
+
+    /*@Test
+    public void 프로젝션_테스트() {
+
+        List<UsernameOnly> result = memberRepository.findProjectionsByUsername("memberA");
+
+        result.forEach(System.out::println);
+
+    }*/
 }

@@ -19,8 +19,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//@ToString(of = {"id", "username", "age"})
-@ToString(exclude = {"team"})
+@ToString(of = {"id", "username", "age"})
+//@ToString(exclude = {"team"})
 public class Member extends BaseEntity{
 
     @Id @GeneratedValue

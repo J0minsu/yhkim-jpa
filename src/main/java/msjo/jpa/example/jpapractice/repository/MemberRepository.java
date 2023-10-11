@@ -2,14 +2,14 @@ package msjo.jpa.example.jpapractice.repository;
 
 import msjo.jpa.example.jpapractice.domain.dto.request.MemberSearchResponse;
 import msjo.jpa.example.jpapractice.domain.entity.Member;
+import msjo.jpa.example.jpapractice.domain.projections.UsernameOnly;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.*;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,7 +25,7 @@ import java.util.Optional;
  * -----------------------------------------------------------
  * 2023/09/26        ms.jo       최초 생성
  */
-public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom {
+public interface MemberRepository extends JpaRepository<Member, Long>, MemberRepositoryCustom, JpaSpecificationExecutor {
 
     Optional<Member> findById(Long id);
     List<Member> findByUsernameAndAgeIsGreaterThan(String name, int age);
@@ -88,5 +88,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberRep
 
     @EntityGraph(attributePaths = {"team"})
     List<Member> findByUsernameContaining(@Param("username") String username);
+
+    List<UsernameOnly> findProjectionsByUsername(@Param("username") String username);
+
 
 }
